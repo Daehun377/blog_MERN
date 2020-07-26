@@ -4,6 +4,13 @@ const jwt = require("jsonwebtoken");
 
 const userModel = require("../model/user");
 
+function tokenGenerator (payload) {
+    return jwt.sign(
+        payload,
+        process.env.SECRETKEY,
+        {expiresIn: "1d"}
+    );
+};
 
 //회원가입기능
 
@@ -90,7 +97,6 @@ router.post("/login", (req, res) => {
                 })
             }
             else{
-
                 user.comparePassword(password, (err, isMatch) => {
                     if(err || isMatch === false) {
                         return res.json({
@@ -99,24 +105,13 @@ router.post("/login", (req, res) => {
                     }
                     else{
                         const payload = { id : user._id, name : user.name, email : user.email, avatar : user.avatar}
-                        const token = jwt.sign(
-                            payload,
-                            process.env.SECRETKEY,
-                            {expiresIn: "1d"}
-                        );
 
                         res.json({
                             success : isMatch,
-                            tokenInfo : token
+                            tokenInfo : tokenGenerator(payload)
                         })
                     }
                 })
-
-                // bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
-                //     console.log(isMatch);
-                //
-
-                // })
             }
         })
         .catch(err => {
