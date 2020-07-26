@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const gravatar = require("gravatar");
+const jwt = require("jsonwebtoken");
 
 const userModel = require("../model/user");
 
@@ -19,8 +20,8 @@ router.post("/register", (req, res) => {
 
     userModel
         .findOne({email})
-        .then(email => {
-            if(email){
+        .then(user => {
+            if(user){
                 return res.json({
                     message : "email already exists"
                 });
@@ -76,6 +77,46 @@ router.post("/register", (req, res) => {
 //@access PUBLIC
 
 router.post("/login", (req, res) => {
+
+    // 이메일 유무체크 -> 패스워드 비교 -> 로그인 -> 성공메세지(토큰발행)
+
+    userModel
+        .findOne({email : req.body.email})
+        .then(user => {
+            console.log(user);
+            if(!user){
+                return res.json({
+                    message : "email not exists"
+                })
+            }
+            else{
+                bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
+                    console.log(isMatch);
+
+                    if(err || isMatch === false) {
+                        return res.json({
+                            message: "password Incorrect"
+                        })
+                    }
+                    else{
+                        res.json({
+                            message : "login success"
+                        })
+                    }
+                })
+            }
+        })
+        .catch(err => {
+            res.json({
+                error : err.message
+            })
+        })
+
+
+
+    //jwt 토큰 생성
+
+
 
 
 })
