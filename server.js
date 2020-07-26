@@ -6,6 +6,10 @@ dotEnv.config();
 
 const app = express();
 
+//라우팅
+const userRouter = require("./routes/user");
+
+
 //데이터베이스 연결
 require("./config/database");
 
@@ -15,6 +19,8 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 
+//라우팅
+app.use("/user", userRouter);
 
 
 const PORT = process.env.PORT || 7000;
