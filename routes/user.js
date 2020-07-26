@@ -15,8 +15,10 @@ router.post("/register", (req, res) => {
 
     // 이메일 유무체크 -> 패스워드 암호화 -> 데이터베이스 저장
 
+    const {name, email, password } = req.body;
+
     userModel
-        .findOne({email : req.body.email})
+        .findOne({email})
         .then(email => {
             if(email){
                 return res.json({
@@ -25,51 +27,33 @@ router.post("/register", (req, res) => {
             }
             else{
 
-               const avatar = gravatar.url(req.body.email, {
-                    s : "200",
-                    r : "pg",
-                    d : "mm"
-                })
 
-                bcrypt.hash(req.body.password, 10, (err, hash) =>{
+                const newUser = new userModel({
+                    name, email, password
+                });
 
-                    if(err){
-                        return res.json({
-                            message : err.message
+                newUser
+                    .save()
+                    .then(user => {
+                        console.log(user);
+
+                        res.json({
+                            id : user._id,
+                            name : user.name,
+                            email : user.email,
+                            password : user.password,
+                            avatar : user.avatar,
+                            date : {
+                                createdDate : user.createdAt,
+                                updatedDate : user.updatedAt
+                            }
                         })
-                    }
-                    else {
-                        const newUser = new userModel({
-                            name : req.body.name,
-                            email : req.body.email,
-                            password : hash,
-                            avatar : avatar
-                        });
-
-                        newUser
-                            .save()
-                            .then(user => {
-                                console.log(user);
-
-                                res.json({
-                                    id : user._id,
-                                    name : user.name,
-                                    email : user.email,
-                                    password : user.password,
-                                    avatar : user.avatar,
-                                    date : {
-                                        createdDate : user.createdAt,
-                                        updatedDate : user.updatedAt
-                                    }
-                                })
-                            })
-                            .catch(err => {
-                                res.json({
-                                    error : err.message
-                                })
-                            })
-                    }
-                })
+                    })
+                    .catch(err => {
+                        res.json({
+                            error : err.message
+                        })
+                    })
             }
         })
         .catch(err => {
