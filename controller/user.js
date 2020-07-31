@@ -102,3 +102,37 @@ exports.login_user = (req, res) => {
             })
         })
 };
+
+exports.current_user = (req, res) => {
+
+    res.json({
+        id : req.user.id,
+        email : req.user.email,
+        name : req.user.name,
+        avatar : req.user.avatar
+    })
+
+};
+
+exports.all_user = (req, res) => {
+
+    userModel
+        .findById(req.user.id)
+        .then(user => {
+            if(user.role !== "admin"){
+                return res.json({
+                    message : "you are not admin"
+                })
+            }
+            else{
+                userModel
+                    .find()
+                    .then(user => res.json(user));
+            }
+        })
+        .catch(err => {
+            res.json({
+                error : err.message
+            })
+        })
+};
