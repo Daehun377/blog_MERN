@@ -105,12 +105,23 @@ exports.login_user = (req, res) => {
 
 exports.current_user = (req, res) => {
 
-    res.json({
-        id : req.user.id,
-        email : req.user.email,
-        name : req.user.name,
-        avatar : req.user.avatar
-    })
+
+    userModel
+        .findById(req.user.id)
+        .then(user => {
+            res.json(user)
+        })
+        .catch(err => {
+            res.json({
+                error : err.message
+            })
+        })
+    // res.json({
+    //     id : req.user.id,
+    //     email : req.user.email,
+    //     name : req.user.name,
+    //     avatar : req.user.avatar
+    // })
 
 };
 
