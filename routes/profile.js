@@ -81,8 +81,60 @@ router.post("/", checkAuth, (req, res) => {
 
 router.get("/", checkAuth, (req, res) => {
 
-
+    profileModel
+        .findOne({user : req.user.id})
+        .then(profile => {
+            if(!profile){
+                return res.status(200).json({
+                    message : "no profile"
+                })
+            }
+            else {
+                res.status(200).json(profile)
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                message : err.message
+            })
+        })
 });
+
+//프로필 불러오기
+//@route GET http://localhost:5000/profile/total
+//@desc Get total Profile
+//@access public
+
+router.get("/total", (req, res) => {
+
+    profileModel
+        .find() //find는 배열로 나온다 findByOne, findById 는 객체로 나온다
+        .populate("user", ["name", "email", "avatar"])
+        .then(docs => {
+            if(docs.length === 0) {
+                return res.staus(200).json({
+                    message : "profile not exists"
+                })
+            }
+            else{
+                res.status(200).json({
+                    count : docs.length,
+                    profiles : docs
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error : err.message
+            })
+        })
+})
+
+
+
+
+
+
 
 
 
