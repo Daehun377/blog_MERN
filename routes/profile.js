@@ -9,7 +9,7 @@ const profileModel = require("../model/profile");
 
 //프로필 등록
 //@route POST http://localhost:5000/profile/
-//@desc register Profile from user
+//@desc register/edit Profile from user
 //@access PRIVATE
 
 router.post("/", checkAuth, (req, res) => {
@@ -37,9 +37,24 @@ router.post("/", checkAuth, (req, res) => {
         .findOne({user : req.user.id})
         .then(profile => {
             if(profile){
-                return res.status(200).json({
-                    message : "profile already exists, please update profile"
-                })
+
+                profileModel
+                    .findOneAndUpdate(
+                        {user : req.user.id},
+                        {$set : profileFields},
+                        {new : true}
+                    )
+                    .then(profile => {
+                        res.status(200).json(profile)
+                    })
+                    .catch(err => {
+                        res.status(404).json({
+                            message : err.message
+                        })
+                    })
+                // return res.status(200).json({
+                //     message : "profile already exists, please update profile"
+                // })
             }
             else{
                 new profileModel(profileFields)
