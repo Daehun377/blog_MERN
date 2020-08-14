@@ -8,11 +8,11 @@ const profileModel = require("../model/profile");
 
 
 //프로필 등록
-//@route POST http://localhost:5000/profile/
+//@route POST http://localhost:5000/profile/register
 //@desc register/edit Profile from user
 //@access PRIVATE
 
-router.post("/", checkAuth, (req, res) => {
+router.post("/register", checkAuth, (req, res) => {
 
     const profileFields = {};
 
@@ -138,7 +138,7 @@ router.get("/total", (req, res) => {
 router.delete("/", checkAuth, (req, res) => {
 
     profileModel
-        .deleteOne({user : req.user.id})
+        .findOneAndDelete({user : req.user.id})
         .then(() => {
             return res.status(200).json({
                 message : "successfully deleted profile"
