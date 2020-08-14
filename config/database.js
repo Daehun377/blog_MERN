@@ -6,6 +6,6 @@ const dbOptions = {
 };
 
 mongoose
-    .connect(process.env.MONGO_URI, dbOptions)
+    .connect(process.env.MONGO_URL, dbOptions)
     .then(() => console.log("mongodb connected"))
     .catch(err => console.log(err.message));

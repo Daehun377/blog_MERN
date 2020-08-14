@@ -5,7 +5,7 @@ const userModel = require("../model/user");
 function tokenGenerator (payload) {
     return jwt.sign(
         payload,
-        process.env.SECRETKEY,
+        process.env.SECRET_TOKEN,
         {expiresIn: "1d"}
     );
 };

@@ -130,7 +130,26 @@ router.get("/total", (req, res) => {
         })
 })
 
+//프로필 없애기
+//@route delete http://localhost:2000/profile/
+//@desc Delete Profiles from of a user
+//@access Private
 
+router.delete("/", checkAuth, (req, res) => {
+
+    profileModel
+        .deleteOne({user : req.user.id})
+        .then(() => {
+            return res.status(200).json({
+                message : "successfully deleted profile"
+            })
+        })
+        .catch(err => {
+            return res.status(500).json({
+                message : err.message
+            })
+        })
+});
 
 
 
