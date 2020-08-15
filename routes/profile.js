@@ -152,8 +152,93 @@ router.delete("/", checkAuth, (req, res) => {
 });
 
 
+//Add experience
+//@route POST http://localhost:2000/profile/experience
+//@desc Add experience to profile
+//@access Private
+
+router.post("/experience", checkAuth, (req, res) => {
+
+    profileModel
+        .findOne({user : req.user.id})
+        .then(profile => {
+
+            const newExperience = {
+                title : req.body.title,
+                company : req.body.company,
+                location : req.body.location,
+                from : req.body.from,
+                to : req.body.to,
+                current : req.body.current,
+                description : req.body.description
+            };
+
+            profile.experience.unshift(newExperience)
+
+            profile
+                .save()
+                .then(profile => {
+                    res.status(200).json(profile)
+                })
+                .catch(err => {
+                    res.status(404).json({
+                        error : err.message
+                    })
+                })
 
 
+        })
+        .catch(err => {
+            res.status(404).json({
+                error : err.message
+            })
+        })
+
+});
+
+//Add Education
+//@route POST http://localhost:2000/profile/education
+//@desc Add education to profile
+//@access Private
+
+router.post("/education", checkAuth, (req, res) => {
+
+   profileModel
+       .findOne({user : req.user.id})
+       .then(profile => {
+
+           const newEducation = {
+
+               school : req.body.school,
+               degree : req.body.degree,
+               fieldOfStudy : req.body.fieldOfStudy,
+               from : req.body.from,
+               to : req.body.to,
+               current : req.body.current,
+               description : req.body.description
+
+           }
+
+           profile.education.unshift(newEducation);
+
+           profile
+               .save()
+               .then(profile => {
+                   res.status(200).json(profile)
+               })
+               .catch(err => {
+                   res.status(404).json({
+                       message : err.message
+                   })
+               })
+
+       })
+       .catch(err => {
+           res.status(404).json({
+               error : err.message
+           })
+       })
+});
 
 
 
