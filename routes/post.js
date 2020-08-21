@@ -186,6 +186,82 @@ router.delete("/unlike/:post_id", checkAuth, (req, res) => {
                 message : err.message
             })
         })
+});
+
+
+//@route POST http://localhost:2000/post/comment/:post_id
+//@desc  Add comment to post
+//@access Private
+
+router.post("/comment/:post_id", checkAuth, (req, res) => {
+
+    const id = req.params.post_id;
+
+    postModel
+        .findById(id)
+        .then(post => {
+
+            const newComment = {
+                text : req.body.text,
+                name : req.body.name,
+                avatar : req.user.avatar,
+                user : req.user.id
+            }
+
+
+
+            post.comments.unshift(newComment)
+            post
+                .save()
+                .then(post => res.status(200).json(post))
+        })
+        .catch(err => {
+            res.status(500).json({
+                message : err.message
+            })
+        })
+});
+
+
+//@route DELETE http://localhost:2000/post/comment/:post_id/:comment_id
+//@desc  Remove comment from post
+//@access Private
+
+router.delete("/comment/:post_id/:comment_id", checkAuth, (req, res) => {
+
+   postModel
+       .findById(req.params.post_id)
+       .then(post => {
+
+           if(post.comments.filter(comment => comment.user.toString() === req.user.id).length === 0){
+               return res.status(200).json({
+                   message : "you have not authorization this comment"
+               })
+           }
+           if(post.comments.filter(comment => comment._id.toString() === req.params.comment_id).length === 0){
+               return res.status(200).json({
+                   message : "comment doesn't exist"
+               })
+           }
+
+           //Find commentIndex and remove the comment
+           const removeIndex = post.comments
+               .map(item => item._id.toString()) //언더바를 쓰던 안쓰던 상관없다 !
+               .indexOf(req.params.comment_id)
+
+           post.comments.splice(removeIndex, 1);
+
+           post
+               .save()
+               .then(post => res.status(200).json(post))
+       })
+       .catch(err => {
+           res.status(500).json({
+               message : err.message
+           })
+       })
+
+
 
 });
 
