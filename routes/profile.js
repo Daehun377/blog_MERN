@@ -241,5 +241,77 @@ router.post("/education", checkAuth, (req, res) => {
 });
 
 
+//Delete Experience
+//@route POST http://localhost:2000/profile/experience/:exp_id
+//@desc Delete Experience from profile
+//@access Private
+
+router.delete("/experience/:exp_id", checkAuth, (req, res) => {
+
+    profileModel
+        .findOne({user : req.user.id})
+        .then(profile => {
+
+          const removeIndex = profile.experience
+                .map(item => item.id) //id를 찾을때 map으로 .id해서 찾을 수 있다!
+                .indexOf(req.params.exp_id)
+
+            profile.experience.splice(removeIndex, 1)
+
+            profile
+                .save()
+                .then(profile => {
+                    res.status(200).json(profile)
+                })
+                .catch(err => {
+                    res.status(404).json({
+                        message : err.message
+                    })
+                })
+
+        })
+        .catch(err => {
+            res.status(404).json({
+                message : err.message
+            })
+        })
+});
+
+//Delete Education
+//@route POST http://localhost:2000/profile/education/:exp_id
+//@desc Delete Education from profile
+//@access Private
+
+router.delete("/education/:edu_id", checkAuth, (req, res) => {
+
+    profileModel
+        .findOne({user : req.user.id})
+        .then(profile => {
+
+            const removeIndex = profile.education
+                .map(item => item.id)
+                .indexOf(req.params.edu_id)
+
+            profile.education.splice(removeIndex, 1)
+
+            profile
+                .save()
+                .then(profile => {
+                    res.status(200).json(profile)
+                })
+                .catch(err => {
+                    res.status(404).json({
+                        message : err.message
+                    })
+                })
+
+        })
+        .catch(err => {
+            res.status(404).json({
+                message : err.message
+            })
+        })
+}); 
+
 
 module.exports = router

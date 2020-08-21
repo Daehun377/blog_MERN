@@ -10,6 +10,7 @@ const app = express();
 //라우팅
 const userRouter = require("./routes/user");
 const profileRouter = require("./routes/profile");
+const postRouter = require("./routes/post");
 
 
 //데이터베이스 연결
@@ -29,6 +30,7 @@ require("./config/passport")(passport);
 //라우팅
 app.use("/user", userRouter);
 app.use("/profile", profileRouter);
+app.use("/post", postRouter);
 
 
 const PORT = process.env.PORT || 7000;
