@@ -17,7 +17,15 @@ const postSchema = new mongoose.Schema(
         avatar : {
             type : String
         },
-        likes : [],
+        likes : [
+            {
+                user : {
+                    type : mongoose.Schema.Types.ObjectId,
+                    ref : "user",
+                    required : true
+                }
+            }
+        ],
         comments : []
     },
     {
