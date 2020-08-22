@@ -15,12 +15,17 @@ const {
 const checkAuth = passport.authenticate("jwt", {session : false});
 
 
+const {
+    validationSignup,
+    validationLogin
+} = require("../helpers/validation");
+
 //회원가입기능
 
 //@route POST http://localhost:5000/user/register
 //@desc Register user / send Email
 //@access PUBLIC
-router.post("/register", register_user);
+router.post("/register", validationSignup, register_user);
 
 //Activation Account
 
@@ -78,7 +83,7 @@ router.post("/activation", (req, res) => {
 //@desc Login user
 //@access PUBLIC
 
-router.post("/login", login_user);
+router.post("/login", validationLogin , login_user);
 
 
 

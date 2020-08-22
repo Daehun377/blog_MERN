@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const sgMail = require("@sendgrid/mail");
+const { validationResult } = require("express-validator"); //결과값이 담긴다
 sgMail.setApiKey(process.env.MAIL_KEY);
 
 const userModel = require("../model/user");
@@ -20,12 +21,18 @@ exports.register_user = (req, res) => {
 
     const {name, email, password } = req.body;
 
+    const errors = validationResult(req); //사용자 요청에 대해 결과값을 담겠다, 패스되면 errors는 쓸모 없음.
+
+    if(!errors.isEmpty()){ //내용이 있다면
+        return res.status(422).json(errors)
+    }
+
     userModel
         .findOne({email})
         .then(user => {
             if(user){
                 return res.json({
-                    message : "email already exists"
+                    errors : "email already exists"
                 });
             }
             else{
@@ -59,7 +66,7 @@ exports.register_user = (req, res) => {
                     })
                     .catch(err => {
                         res.status(400).json({
-                            mesasge : err.message
+                            errors : err.message
                         })
                     })
 
@@ -95,7 +102,7 @@ exports.register_user = (req, res) => {
         })
         .catch(err => {
             res.json({
-                message : err.message
+                errors : err.message
             })
         })
 };
@@ -106,20 +113,26 @@ exports.login_user = (req, res) => {
 
     const {email, password} = req.body;
 
-    userModel
-        .findOne({email})
-        .then(user => {
-            console.log(user);
-            if(!user){
-                return res.json({
-                    message : "email not exists"
-                })
-            }
-            else{
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+    else {
+        userModel
+            .findOne({email})
+            .then(user => {
+                // console.log(user);
+                // if(!user){
+                //     return res.status(401).json({
+                //         errors : "email not exists"
+                //     })
+                // }
+                // else{
                 user.comparePassword(password, (err, isMatch) => {
                     if(err || isMatch === false) {
-                        return res.json({
-                            message: "password Incorrect"
+                        return res.status(400).json({
+                            errors: "password Incorrect"
                         })
                     }
                     else{
@@ -131,13 +144,14 @@ exports.login_user = (req, res) => {
                         })
                     }
                 })
-            }
-        })
-        .catch(err => {
-            res.json({
-                error : err.message
+                // }
             })
-        })
+            .catch(err => {
+                res.json({
+                    errors : err.message
+                })
+            })
+    }
 };
 
 exports.current_user = (req, res) => {
